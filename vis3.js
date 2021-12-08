@@ -3,24 +3,21 @@
 // Define parser to load outage data
 parser_date = d3.timeParse('%m/%d/%Y %_I:%M%p')
 
-// Load map for clean descriptions of data
-// data_descriptions = d3.json("https://ninaprakash1.github.io/assets/cs448b-final-project/vis3/data_descr.json")
-
 // Define colors for plotting
 colors = ({
-    'Severe Weather': '#E15100', // 'red',
-    'Physical Attack':  '#686868', // 'yellow',
-    'Cyber Attack': '#9D8385', // 'green',
-    'Fuel Supply Emergency': '#86D0C9', // 'blue',
-    'Load Shedding': '#E1C605', // 'purple',
-    'Voltage Reduction': 'pink', // 'orange',
-    'Islanding': '#F4915F', // 'grey',
+    'Severe Weather': '#E15100',
+    'Physical Attack':  '#686868',
+    'Cyber Attack': '#9D8385',
+    'Fuel Supply Emergency': '#86D0C9',
+    'Load Shedding': '#E1C605',
+    'Voltage Reduction': 'pink',
+    'Islanding': '#F4915F',
     'Equipment Failure': 'black',
     'Unknown': '#f49f2f'
   });
 
 // Define maximum number of customers (after filtering for NaN, '', Unknown, etc.)
-max_num_customers = 4645572 // 118000 // WRONG
+max_num_customers = 4645572
 
 // Define spacing variables
 plotVars_vis3 = ({
@@ -35,10 +32,10 @@ plotVars_vis3 = ({
     scatterHeight: 600,
     scatterOutlierHeight: 100,
     scatterWidth: 600,
-    scatterLeftMargin: 1150, // 1100
-    scatterTopMargin: 200 + 50, // 200
+    scatterLeftMargin: 1150,
+    scatterTopMargin: 200 + 50,
     backgroundOpacity: 0.02,
-    scatterMax: 500000 // max_num_customers // 1000
+    scatterMax: 500000
   });
 
 // Define vertical spacing for color legend
@@ -65,15 +62,22 @@ sizeScale = d3.scaleSqrt()
   .domain([0.01, max_num_customers])
   .range([plotVars_vis3.minCircleSize, plotVars_vis3.maxCircleSize]);
 
+// Define data for circle size legend
+size_legend_data = [
+  {r: sizeScale(10), cx: -75, cy: 225, text: '10'},
+  {r: sizeScale(100000), cx: -75, cy: 300, text: '100k'},
+  {r: sizeScale(1000000), cx: -75,cy: 425, text: '1000k'}
+]
+
 // Define y_axis scale for scatter plot
 y = d3.scaleLinear()
-  .domain([0, plotVars_vis3.scatterMax])// max_num_customers])
+  .domain([0, plotVars_vis3.scatterMax])
   .range([plotVars_vis3.scatterHeight,0])
   .nice()
 
 // Define second y-axis for outliers
 y_outlier = d3.scaleLinear()
-  .domain([plotVars_vis3.scatterMax, max_num_customers])// [49000, 119000])
+  .domain([plotVars_vis3.scatterMax, max_num_customers])
   .range([plotVars_vis3.scatterOutlierHeight,0])
   .nice()
 
@@ -124,7 +128,7 @@ outage_data = d3.csv("https://ninaprakash1.github.io/assets/cs448b-final-project
 
         /// Add plot title //
         svg_vis3.append('text')
-            .attr('x',window.outerWidth / 2)
+            .attr('x',window.outerWidth / 2 + 40)
             .attr('y',50)
             .text('Major US Grid Outages from 2000 - 2014')
             .attr('font-family','Montserrat')
@@ -152,25 +156,23 @@ outage_data = d3.csv("https://ninaprakash1.github.io/assets/cs448b-final-project
         // Add x-axis
         var xaxis = svg_vis3.append('g')
             .attr('transform', `translate(${plotVars_vis3.scatterLeftMargin}, ${plotVars_vis3.scatterTopMargin + plotVars_vis3.scatterHeight})`)
-            .style('font-family','Montserrat').style('font-size','20px')//.style('font-weight','bold')
+            .style('font-family','Montserrat').style('font-size','20px')
             .call(d3.axisBottom(x_axis))
             .append('text')
             .attr('transform', `translate(${plotVars_vis3.scatterWidth / 2}, 70)`)
             .attr('text-anchor', 'middle')
             .attr('fill', 'black')
-            //.attr('font-weight', 'bold')
             .text('Date of Event');
 
         // Add y-axis
         var yaxis = svg_vis3.append('g')
             .attr('transform', `translate(${plotVars_vis3.scatterLeftMargin}, ${plotVars_vis3.scatterTopMargin})`)
-            .style('font-family','Montserrat').style('font-size','20px')//.style('font-weight','bold')
+            .style('font-family','Montserrat').style('font-size','20px')
             .call(d3.axisLeft(y))
             .append('text')
             .attr('transform', `translate(-115, ${plotVars_vis3.scatterHeight / 2 - 75}) rotate(-90)`)
             .attr('text-anchor', 'middle')
             .attr('fill', 'black')
-            //.attr('font-weight', 'bold')
             .text('Number of Customers Affected');
 
         // Add secondary y-axis
@@ -185,7 +187,8 @@ outage_data = d3.csv("https://ninaprakash1.github.io/assets/cs448b-final-project
             .attr('y1', plotVars_vis3.scatterTopMargin - 25)
             .attr('x2',plotVars_vis3.scatterLeftMargin + plotVars_vis3.scatterWidth)
             .attr('y2',plotVars_vis3.scatterTopMargin - 25)
-            .attr('stroke','black')
+            .attr('stroke','grey')
+            .attr('stroke-dasharray','3,3')
             .raise()
 
         // Add top line for scatter plot
@@ -194,8 +197,33 @@ outage_data = d3.csv("https://ninaprakash1.github.io/assets/cs448b-final-project
             .attr('y1', plotVars_vis3.scatterTopMargin)
             .attr('x2',plotVars_vis3.scatterLeftMargin + plotVars_vis3.scatterWidth)
             .attr('y2',plotVars_vis3.scatterTopMargin)
-            .attr('stroke','black')
+            .attr('stroke','grey')
+            .attr('stroke-dasharray','3,3')
             .raise()
+
+        // Add top line for outlier plot
+        svg_vis3.append('line')
+            .attr('x1',plotVars_vis3.scatterLeftMargin)
+            .attr('y1',plotVars_vis3.scatterTopMargin - 25 - plotVars_vis3.scatterOutlierHeight)
+            .attr('x2',plotVars_vis3.scatterLeftMargin + plotVars_vis3.scatterWidth)
+            .attr('y2',plotVars_vis3.scatterTopMargin - 25 - plotVars_vis3.scatterOutlierHeight)
+            .attr('stroke','black')
+
+        // Add right line on main scatter plot
+        svg_vis3.append('line')
+            .attr('x1',plotVars_vis3.scatterLeftMargin + plotVars_vis3.scatterWidth)
+            .attr('y1',plotVars_vis3.scatterTopMargin + plotVars_vis3.scatterHeight)
+            .attr('x2',plotVars_vis3.scatterLeftMargin + plotVars_vis3.scatterWidth)
+            .attr('y2',plotVars_vis3.scatterTopMargin)
+            .attr('stroke','black')
+
+        // Add right line on outlier plot
+        svg_vis3.append('line')
+          .attr('x1',plotVars_vis3.scatterLeftMargin + plotVars_vis3.scatterWidth)
+          .attr('y1',plotVars_vis3.scatterTopMargin - 25)
+          .attr('x2',plotVars_vis3.scatterLeftMargin + plotVars_vis3.scatterWidth)
+          .attr('y2',plotVars_vis3.scatterTopMargin - 25 - plotVars_vis3.scatterOutlierHeight)
+          .attr('stroke','black')
 
         var max_foo = 100;
 
@@ -223,7 +251,7 @@ outage_data = d3.csv("https://ninaprakash1.github.io/assets/cs448b-final-project
             })
             .attr('opacity', function (d) {
                 if (matches(d.datetime, x_slider.invert(currentValue))) {
-                    return 1;
+                    return 0.9;
                 }
                 else {
                     return plotVars_vis3.backgroundOpacity;
@@ -292,272 +320,312 @@ outage_data = d3.csv("https://ninaprakash1.github.io/assets/cs448b-final-project
             scatterGroup.selectAll('.scatterLabel').remove();
         }
 
-        var outageGroup = svg_vis3.append('g').attr('transform','translate(0,0)') // CHANGED THIS to 50
+        var outageGroup = svg_vis3.append('g').attr('transform','translate(0,0)')
 
-  var max_n_cust = 0;
+        var max_n_cust = 0;
 
-  // Helper function to resize the circles based on number of customers affected
-  function resizeOutages() {
-    outageGroup.selectAll('circle')
-      .attr('r', function (d) {
-        if (matches(d.datetime, x_slider.invert(currentValue))) {
-          let n_cust = parseInt(d.num_customers);
-          if (n_cust > max_n_cust) { max_n_cust = n_cust;}
-          if (isNaN(n_cust)) {return 0;}
-          if (n_cust == 0) { return plotVars_vis3.minCircleSize; }
-          else {
-            return sizeScale(n_cust);
-          }
+        // Helper function to resize the circles based on number of customers affected
+        function resizeOutages() {
+          outageGroup.selectAll('circle')
+            .attr('r', function (d) {
+              if (matches(d.datetime, x_slider.invert(currentValue))) {
+                let n_cust = parseInt(d.num_customers);
+                if (n_cust > max_n_cust) { max_n_cust = n_cust;}
+                if (isNaN(n_cust)) {return 0;}
+                if (n_cust == 0) { return plotVars_vis3.minCircleSize; }
+                else {
+                  return sizeScale(n_cust);
+                }
+              }
+              else { return 0; }
+            })
+
+          scatterGroup.selectAll('circle')
+          .attr('opacity', function (d) {
+              if (matches(d.datetime, x_slider.invert(currentValue))) {
+                return 0.9;
+              }
+              else {
+                return plotVars_vis3.backgroundOpacity;
+              }
+          })
         }
-        else { return 0; }
+        
+        // Add a circle size legend
+        //var circleSizeLegend = svg.append('g')
+
+        svg_vis3.selectAll('circle.size-legend')
+          .attr('class', 'circle-legend')
+          .data(size_legend_data)
+          .enter()
+          .append('circle')
+          .attr('r', function(d) { console.log(d.r); return d.r; })
+          .attr('cx', d => d.cx)
+          .attr('cy', d => d.cy)
+          .attr('fill','grey')
+          .attr('opacity',0.15)
+
+        svg_vis3.selectAll('text.size-legend')
+          .attr('class','circle-legend')
+          .data(size_legend_data)
+          .enter()
+          .append('text')
+          .text(d => d.text)
+          .attr('x', d => d.cx)
+          .attr('y', d => d.cy - d.r - 10)
+          .attr('text-anchor','middle')
+          .attr('font-family','Montserrat')
+
+        svg_vis3.append('text')
+          .attr('x', -75)
+          .attr('y', 135)
+          .attr('text-anchor','middle')
+          .text('Num Customers')
+          .attr('font-family','Montserrat')
+
+        svg_vis3.append('text')
+          .attr('x', -75)
+          .attr('y', 160)
+          .attr('text-anchor','middle')
+          .text('Affected')
+          .attr('font-family','Montserrat')
+
+        // Add the outage circles on the map
+        outageGroup.selectAll('circle.outages')
+          .attr('class', 'circle-outages')
+          .data(outage_data)
+          .enter()
+          .append('circle')
+          .attr('r', function (d) {
+            if (matches(d.datetime, x_slider.invert(currentValue))) {
+              let n_cust = parseInt(d.num_customers);
+              if (n_cust > max_n_cust) { max_n_cust = n_cust;}
+              if (isNaN(n_cust)) {return 0;}
+              if (n_cust == 0) { return plotVars_vis3.minCircleSize; }
+              else {
+                return sizeScale(n_cust);
+              }
+            }
+            else { return 0; }
+          })
+          .attr('cx', function (d) {
+            var lon_lat = {0: d.lon, 1: d.lat};
+            if (projection(lon_lat) == null) { return -10; }
+            else {return projection(lon_lat)[0]};
+          })
+          .attr('cy',function (d) {
+            var lon_lat = {0: d.lon, 1: d.lat};
+            if (projection(lon_lat) == null) { return -10; }
+            else {return projection(lon_lat)[1]};
+          })
+          .attr('fill', function (d) {
+            if (d.datetime == null) { return 'white'; }
+            else {
+                return colors[data_descriptions[d.event_description]];
+            }
+          })
+          .attr('opacity',0.9)
+          .on('mouseover', handleOutageHoverOn)
+          .on('mouseout', handleOutageHoverOff);
+
+        function handleOutageHoverOn(event, d) {
+          if (projection({0: d.lon, 1: d.lat})[0] + 40 < plotVars_vis3.mapWidth - 400) {
+            var x_anchor = projection({0: d.lon, 1: d.lat})[0] + 40;
+            var anchor = 'start';
+          }
+          else {
+            var x_anchor = projection({0: d.lon, 1: d.lat})[0] - 40;
+            var anchor = 'end';
+          }
+          svg_vis3.append('text')
+            .attr('class', 'ptLabel')
+            .attr('x', x_anchor)
+            .attr('y', projection({0: d.lon, 1: d.lat})[1] - 23)
+            .attr('font-family', 'Montserrat')
+            .attr('font-weight', 'bold')
+            .attr('font-size','16px')
+            .attr('fill','black')
+            .attr('text-anchor',anchor)
+            .text(d.event_description);
+          svg_vis3.append('text')
+            .attr('class', 'ptLabel')
+            .attr('x', x_anchor)
+            .attr('y', projection({0: d.lon, 1: d.lat})[1] + 2)
+            .attr('font-family', 'Montserrat')
+            .attr('font-weight', 'bold')
+            .attr('font-size','16px')
+            .attr('fill','black')
+            .attr('text-anchor',anchor)
+            .text(d.num_customers + ' Customers Affected');
+          svg_vis3.append('text')
+                .attr('class', 'ptLabel')
+                .attr('x', x_anchor)
+                .attr('y', projection({0: d.lon, 1: d.lat})[1] + 25)
+                .attr('font-family', 'Montserrat')
+                .attr('font-weight', 'bold')
+                .attr('font-size','16px')
+                .attr('fill','black')
+                .attr('text-anchor',anchor)
+                .text(d.location);
+          svg_vis3.append('text')
+                .attr('class', 'ptLabel')
+                .attr('x', x_anchor)
+                .attr('y', projection({0: d.lon, 1: d.lat})[1] + 50)
+                .attr('font-family', 'Montserrat')
+                .attr('font-weight', 'bold')
+                .attr('font-size','16px')
+                .attr('fill','black')
+                .attr('text-anchor',anchor)
+                .text('Occurred on ' + formatter(d.datetime));
+        }
+
+        function handleOutageHoverOff(event, d) {
+          svg_vis3.selectAll('.ptLabel').remove();
+        }
+
+        //////////////// LEGEND //////////////////
+        var legend = svg_vis3.append('g').attr('transform',`translate(${plotVars_vis3.scatterLeftMargin + plotVars_vis3.scatterWidth + 100},200)`)
+
+        legend.selectAll('circle.legend')
+          .data(legend_spacing)
+          .enter()
+          .append('circle')
+          .attr('r',plotVars_vis3.legendCircleRadius)
+          .attr('cx',0)
+          .attr('cy',d => d.cy)
+          .attr('fill',d => d.color)
+          .attr('opacity',0.9)
+
+        legend.selectAll('text.legend')
+          .data(legend_spacing)
+          .enter()
+          .append('text')
+          .attr('x',plotVars_vis3.legendHorizSpace)
+          .attr('y',d => d.cy)
+          .text(d => d.name)
+          .attr('font-family','Montserrat')
+          .attr('font-size','20px')
+
+        ////////// Instructions ///////////////
+        svg_vis3.append('text')
+          .attr('x', 50 + x_slider.range()[1] / 2)
+          .attr('y', plotVars_vis3.mapHeight + 230)
+          .text('Use the slider to see major grid outages over time.')
+          .attr('font-family','Montserrat')
+          .attr('font-size','23px')
+          .attr('text-anchor','middle')
+
+        svg_vis3.append('text')
+          .attr('x', 50 + x_slider.range()[1] / 2)
+          .attr('y', plotVars_vis3.mapHeight + 280)
+          .text('Hover to see more information about each outage.')
+          .attr('font-family','Montserrat')
+          .attr('font-size','23px')
+          .attr('text-anchor','middle')
+
+        //////////////// SLIDER //////////////////
+        // Citation: https://d19jftygre6gh0.cloudfront.net/officeofjane/47d2b0bfeecfcb41d2212d06d095c763
+        
+        var slider = svg_vis3.append("g")
+            .attr("class", "slider")
+            .attr("transform", "translate(50,50)");
+
+        // Add the line
+        slider.append('line')
+          .attr('x1', x_slider.range()[0])
+          .attr('x2', x_slider.range()[1])
+          .attr('y1', plotVars_vis3.mapHeight + 75)
+          .attr('y2', plotVars_vis3.mapHeight + 75)
+          .style('stroke-width',20)
+          .style('stroke','gainsboro')
+          .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+            .attr("class", "track-inset")
+          .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+            .attr("class", "track-overlay")
+            .call(d3.drag()
+                .on("start.interrupt", function() { slider.interrupt(); })
+                .on("start drag", function(event,d) {
+                  currentValue = event.x;      // Get the new current value
+                  update(x_slider.invert(currentValue)); // Update the label
+                  resizeOutages();
+                })
+            );
+
+        function matches(item_dt, curr_val_dt) {
+          return item_dt.getFullYear() == curr_val_dt.getFullYear()
+                  & item_dt.getMonth() == curr_val_dt.getMonth();
+        }
+
+        function update(h) {
+          // update position and text of label according to slider scale
+          handle.attr("cx", x_slider(h)).raise();
+          label.attr("x", x_slider(h))
+            .text(d3.timeFormat("%b %Y")(h));
+      }
+
+        // Add ticks
+        slider.insert("g", ".track-overlay")
+          .attr("class", "ticks")
+          .selectAll("text")
+          .data(x_slider.ticks(10))
+          .enter()
+          .append("text")
+          .attr("x", x_slider)
+          .attr("y", plotVars_vis3.mapHeight + plotVars_vis3.sliderDistance + 35)
+          .attr("text-anchor", "middle")
+          .attr('font-family','Montserrat')
+          .attr('font-weight','bold')
+          .text(function(d) {return d3.timeFormat("%Y")(d); });
+
+        // Add label while sliding
+        var label = slider.append("text")  
+          .attr("class", "label")
+          .attr('x',currentValue)
+          .attr('y',plotVars_vis3.mapHeight + plotVars_vis3.sliderDistance - 5)
+          .attr('font-family','Montserrat')
+          .attr('font-weight','bold')
+          .attr("text-anchor", "middle")
+          .text(d3.timeFormat("%b %Y")(x_slider.invert(currentValue)))
+          .attr("transform", "translate(0," + (-25) + ")")
+
+        // Add the handle
+        var handle = slider.insert("circle", ".track-overlay")
+          .attr("class", "handle")
+          .attr('cx',currentValue)
+          .attr('cy',plotVars_vis3.mapHeight + plotVars_vis3.sliderDistance)
+          .attr("r", 9)
+          .raise();
+
+
+      })
       })
 
-    scatterGroup.selectAll('circle')
-    .attr('opacity', function (d) {
-        if (matches(d.datetime, x_slider.invert(currentValue))) {
-          return 1;
-        }
-        else {
-          return plotVars_vis3.backgroundOpacity;
-        }
-    })
-  }
+      function plotBaseMapVis3(us_map) {
+          const svg_vis3 = d3.select('#vis3')
+          .attr("viewBox", [-window.outerWidth / 2 + 200, 0, 2750, 900])
 
-  // Add the outage circles on the map
-  outageGroup.selectAll('circle.outages')
-    .attr('class', 'circle-outages')
-    .data(outage_data)
-    .enter()
-    .append('circle')
-    .attr('r', function (d) {
-      if (matches(d.datetime, x_slider.invert(currentValue))) {
-        let n_cust = parseInt(d.num_customers);
-        if (n_cust > max_n_cust) { max_n_cust = n_cust;}
-        if (isNaN(n_cust)) {return 0;}
-        if (n_cust == 0) { return plotVars_vis3.minCircleSize; }
-        else {
-          return sizeScale(n_cust);
-        }
+          svg_vis3.append("path")
+          .datum(topojson.merge(us_map, us_map.objects.lower48.geometries))
+          .attr("fill", "#ddd")
+          .attr("d", d3.geoPath())
+          .attr('transform','translate(0,50)');
+
+          svg_vis3.append("path")
+          .datum(topojson.mesh(us_map, us_map.objects.lower48, (a, b) => a !== b))
+          .attr("fill", "none")
+          .attr("stroke", "white")
+          .attr("stroke-linejoin", "round")
+          .attr("d", d3.geoPath())
+          .attr('transform','translate(0,50)');
+
+          return svg_vis3;
+
       }
-      else { return 0; }
-    })
-    .attr('cx', function (d) {
-      var lon_lat = {0: d.lon, 1: d.lat};
-      if (projection(lon_lat) == null) { return -10; }
-      else {return projection(lon_lat)[0]};
-    })
-    .attr('cy',function (d) {
-      var lon_lat = {0: d.lon, 1: d.lat};
-      if (projection(lon_lat) == null) { return -10; }
-      else {return projection(lon_lat)[1]};
-    })
-    .attr('fill', function (d) {
-      if (d.datetime == null) { return 'white'; }
-      else {
-          return colors[data_descriptions[d.event_description]];
+
+      function matches(item_dt, curr_val_dt) {
+          return item_dt.getFullYear() == curr_val_dt.getFullYear()
+                  & item_dt.getMonth() == curr_val_dt.getMonth();
       }
-    })
-    .on('mouseover', handleOutageHoverOn)
-    .on('mouseout', handleOutageHoverOff);
-
-  function handleOutageHoverOn(event, d) {
-    if (projection({0: d.lon, 1: d.lat})[0] + 40 < plotVars_vis3.mapWidth - 400) {
-      var x_anchor = projection({0: d.lon, 1: d.lat})[0] + 40;
-      var anchor = 'start';
-    }
-    else {
-      var x_anchor = projection({0: d.lon, 1: d.lat})[0] - 40;
-      var anchor = 'end';
-    }
-    svg_vis3.append('text')
-      .attr('class', 'ptLabel')
-      .attr('x', x_anchor)
-      .attr('y', projection({0: d.lon, 1: d.lat})[1] - 23)
-      .attr('font-family', 'Montserrat')
-      .attr('font-weight', 'bold')
-      .attr('font-size','16px')
-      .attr('fill','black')
-      .attr('text-anchor',anchor)
-      .text(d.event_description);
-    svg_vis3.append('text')
-      .attr('class', 'ptLabel')
-      .attr('x', x_anchor)
-      .attr('y', projection({0: d.lon, 1: d.lat})[1] + 2)
-      .attr('font-family', 'Montserrat')
-      .attr('font-weight', 'bold')
-      .attr('font-size','16px')
-      .attr('fill','black')
-      .attr('text-anchor',anchor)
-      .text(d.num_customers + ' Customers Affected');
-    svg_vis3.append('text')
-          .attr('class', 'ptLabel')
-          .attr('x', x_anchor)
-          .attr('y', projection({0: d.lon, 1: d.lat})[1] + 25)
-          .attr('font-family', 'Montserrat')
-          .attr('font-weight', 'bold')
-          .attr('font-size','16px')
-          .attr('fill','black')
-          .attr('text-anchor',anchor)
-          .text(d.location);
-    svg_vis3.append('text')
-          .attr('class', 'ptLabel')
-          .attr('x', x_anchor)
-          .attr('y', projection({0: d.lon, 1: d.lat})[1] + 50)
-          .attr('font-family', 'Montserrat')
-          .attr('font-weight', 'bold')
-          .attr('font-size','16px')
-          .attr('fill','black')
-          .attr('text-anchor',anchor)
-          .text('Occurred on ' + formatter(d.datetime));
-  }
-
-  function handleOutageHoverOff(event, d) {
-    svg_vis3.selectAll('.ptLabel').remove();
-  }
-
-  //////////////// LEGEND //////////////////
-  var legend = svg_vis3.append('g').attr('transform',`translate(${plotVars_vis3.scatterLeftMargin + plotVars_vis3.scatterWidth + 100},200)`)
-
-  legend.selectAll('circle.legend')
-    .data(legend_spacing)
-    .enter()
-    .append('circle')
-    .attr('r',plotVars_vis3.legendCircleRadius)
-    .attr('cx',0)
-    .attr('cy',d => d.cy)
-    .attr('fill',d => d.color)
-
-  legend.selectAll('text.legend')
-    .data(legend_spacing)
-    .enter()
-    .append('text')
-    .attr('x',plotVars_vis3.legendHorizSpace)
-    .attr('y',d => d.cy)
-    .text(d => d.name)
-    .attr('font-family','Montserrat')
-    .attr('font-size','20px')
-
-  ////////// Instructions ///////////////
-  svg_vis3.append('text')
-    .attr('x', 50 + x_slider.range()[1] / 2)
-    .attr('y', plotVars_vis3.mapHeight + 230)
-    .text('Use the slider to see major grid outages over time.')
-    .attr('font-family','Montserrat')
-    .attr('font-size','23px')
-    .attr('text-anchor','middle')
-
-  svg_vis3.append('text')
-    .attr('x', 50 + x_slider.range()[1] / 2)
-    .attr('y', plotVars_vis3.mapHeight + 280)
-    .text('Hover to see more information about each outage.')
-    .attr('font-family','Montserrat')
-    .attr('font-size','23px')
-    .attr('text-anchor','middle')
-
-  //////////////// SLIDER //////////////////
-  // Citation: https://d19jftygre6gh0.cloudfront.net/officeofjane/47d2b0bfeecfcb41d2212d06d095c763
-  
-  var slider = svg_vis3.append("g")
-      .attr("class", "slider")
-      .attr("transform", "translate(50,50)");
-
-  // Add the line
-  slider.append('line')
-    .attr('x1', x_slider.range()[0])
-    .attr('x2', x_slider.range()[1])
-    .attr('y1', plotVars_vis3.mapHeight + 75)
-    .attr('y2', plotVars_vis3.mapHeight + 75)
-    .style('stroke-width',20)
-    .style('stroke','gainsboro')
-    .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
-      .attr("class", "track-inset")
-    .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
-      .attr("class", "track-overlay")
-      .call(d3.drag()
-          .on("start.interrupt", function() { slider.interrupt(); })
-          .on("start drag", function(event,d) {
-            currentValue = event.x;      // Get the new current value
-            update(x_slider.invert(currentValue)); // Update the label
-            resizeOutages();
-          })
-      );
-
-  function matches(item_dt, curr_val_dt) {
-    return item_dt.getFullYear() == curr_val_dt.getFullYear()
-            & item_dt.getMonth() == curr_val_dt.getMonth();
-  }
-
-  function update(h) {
-    // update position and text of label according to slider scale
-    handle.attr("cx", x_slider(h)).raise();
-    label.attr("x", x_slider(h))
-      .text(d3.timeFormat("%b %Y")(h));
-}
-
-  // Add ticks
-  slider.insert("g", ".track-overlay")
-    .attr("class", "ticks")
-    .selectAll("text")
-    .data(x_slider.ticks(10))
-    .enter()
-    .append("text")
-    .attr("x", x_slider)
-    .attr("y", plotVars_vis3.mapHeight + plotVars_vis3.sliderDistance + 35)
-    .attr("text-anchor", "middle")
-    .attr('font-family','Montserrat')
-    .attr('font-weight','bold')
-    .text(function(d) {return d3.timeFormat("%Y")(d); });
-
-  // Add label while sliding
-  var label = slider.append("text")  
-    .attr("class", "label")
-    .attr('x',currentValue)
-    .attr('y',plotVars_vis3.mapHeight + plotVars_vis3.sliderDistance - 5)
-    .attr('font-family','Montserrat')
-    .attr('font-weight','bold')
-    .attr("text-anchor", "middle")
-    .text(d3.timeFormat("%b %Y")(x_slider.invert(currentValue)))
-    .attr("transform", "translate(0," + (-25) + ")")
-
-  // Add the handle
-  var handle = slider.insert("circle", ".track-overlay")
-    .attr("class", "handle")
-    .attr('cx',currentValue)
-    .attr('cy',plotVars_vis3.mapHeight + plotVars_vis3.sliderDistance)
-    .attr("r", 9)
-    .raise();
-
-
-})
-})
-
-function plotBaseMapVis3(us_map) {
-    const svg_vis3 = d3.select('#vis3')
-    .attr("viewBox", [-window.outerWidth / 2 + 200, 0, 2750, 900])
-    //.attr('width',window);
-
-    svg_vis3.append("path")
-    .datum(topojson.merge(us_map, us_map.objects.lower48.geometries))
-    .attr("fill", "#ddd")
-    .attr("d", d3.geoPath())
-    .attr('transform','translate(0,50)');
-
-    svg_vis3.append("path")
-    .datum(topojson.mesh(us_map, us_map.objects.lower48, (a, b) => a !== b))
-    .attr("fill", "none")
-    .attr("stroke", "white")
-    .attr("stroke-linejoin", "round")
-    .attr("d", d3.geoPath())
-    .attr('transform','translate(0,50)');
-
-    return svg_vis3;
-
-}
-
-function matches(item_dt, curr_val_dt) {
-    return item_dt.getFullYear() == curr_val_dt.getFullYear()
-            & item_dt.getMonth() == curr_val_dt.getMonth();
-}
 
 data_descriptions = ({"Severe Weather - Thunderstorms": "Severe Weather",
                     "Fuel Supply Emergency - Coal": "Fuel Supply Emergency",
@@ -675,6 +743,3 @@ data_descriptions = ({"Severe Weather - Thunderstorms": "Severe Weather",
                     "Breaker Closed": "Equipment Failure", "Hurricane Claudette": "Severe Weather", "Tropical Storm Bill": "Severe Weather",
                     "Interruption of Firm Power": "Load Shedding", "Flood": "Severe Weather",
                     "Relaying Malfunction": "Equipment Failure", "Cyber Threat From Internet": "Cyber Attack", "Cable Tripped": "Equipment Failure", "Hurricane Lily": "Severe Weather", "Fire": "Severe Weather", "Interruption of Firm Power (Unit Tripped)": "Load Shedding", "Vandalism/Insulators": "Physical Attack", "Interruption of Firm Load": "Load Shedding", "Feeder Shutdowns": "Equipment Failure", "Flooding": "Severe Weather", "Firm Load Interruption": "Load Shedding", "Interruption of Firm Power (Public Appeal)": "Load Shedding", "Interruption of Power": "Load Shedding", "Interruption of Firm Power & Public Appeal": "Load Shedding", "Firm load interruption": "Load Shedding", "Tripped line": "Equipment Failure", "Circuit failure/fire": "Equipment Failure", "High winds and thunder": "Severe Weather", "B-phase to ground fault": "Equipment Failure", "Line Outages/Switch Fire": "Severe Weather", "Relay Trouble": "Equipment Failure", "Generating Resources Loss": "Fuel Supply Emergency", "Tripped Lines Fire": "Equipment Failure", "Voltage Elec Usage": "Voltage Reduction", "Thunder/Lightning": "Severe Weather", "Severe Weather High Wind": "Severe Weather", "Energy Conservation": "Load Shedding", "Relay Malfunction & Fire": "Equipment Failure", "Transformer Faulted": "Equipment Failure", "Transmission Line Loss": "Equipment Failure"})
-
-
-                    d3.timeParse("%m/%d/%Y %H:%M:%s")("05/03/2021 00:00:00")

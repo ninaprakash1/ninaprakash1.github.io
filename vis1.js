@@ -143,8 +143,6 @@ plant_data = d3.csv("https://ninaprakash1.github.io/assets/cs448b-final-project/
                 .attr('class','ptRect')
                 .attr('cx',projection_vis1({0: d.longitude, 1: d.latitude})[0] - 55)
                 .attr('cy', projection_vis1({0: d.longitude, 1: d.latitude})[1] - 18 + 75)
-                //.attr('width',90)
-                //.attr('height',40)
                 .attr('rx',50)
                 .attr('ry',40)
                 .attr('fill','white')
