@@ -66,7 +66,7 @@ plant_data = d3.csv("https://ninaprakash1.github.io/assets/cs448b-final-project/
 
       //////////////// WRITE A TITLE //////////////
       svg.append('text')
-        .attr('x',window.outerWidth / 2)
+        .attr('x',window.outerWidth / 2 + 100)
         .attr('y',50)
         .text('US Power Plants by Fuel Type')
         .attr('font-family','Montserrat')
@@ -94,6 +94,9 @@ plant_data = d3.csv("https://ninaprakash1.github.io/assets/cs448b-final-project/
         .attr('stroke','grey')
         .attr('stroke-width',2)
         .on('click', handleButtonClick)
+        .on('mouseover',function(event,d) {
+          d3.select(this).style('cursor','pointer');
+        })
 
       function handleButtonClick(event,d) {
         // Flip the value of size_by_cap
@@ -138,6 +141,9 @@ plant_data = d3.csv("https://ninaprakash1.github.io/assets/cs448b-final-project/
 
       ///////////////// POWER PLANT HOVER ON ////////////////
       function handlePowerPlantHoverOn(event, d) {           //Handle 'mouseover' events
+            if (fuel_selected == "All") {
+              d3.select(this).style('cursor','pointer');
+            }
             if (d.primary_fuel == fuel_selected | fuel_selected == "All") {
               svg.append('ellipse')
                 .attr('class','ptRect')
@@ -233,6 +239,7 @@ plant_data = d3.csv("https://ninaprakash1.github.io/assets/cs448b-final-project/
 
       ///////////////// PIE CHART MOUSE ON ////////////////
       function handlePieMouseOver(d, i) {
+        d3.select(this).style('cursor','pointer');
         if (fuel_selected == "All") {
           var fuel_hovered = this.getAttribute('fuel');
           var num_plants = plant_data.filter(d => d.primary_fuel == fuel_hovered).map(d => 1).reduce((prev,next) => prev + next);
@@ -291,6 +298,9 @@ plant_data = d3.csv("https://ninaprakash1.github.io/assets/cs448b-final-project/
         .attr('fill','black')
         .attr('font-weight','bold')
         .attr('text-anchor','middle')
+        .on('mouseover',function(event,d) {
+          d3.select(this).style('cursor','pointer');
+        })
       
       svg.on('click', handleClickAll);
 

@@ -549,7 +549,10 @@ outage_data = d3.csv("https://ninaprakash1.github.io/assets/cs448b-final-project
                   update(x_slider.invert(currentValue)); // Update the label
                   resizeOutages();
                 })
-            );
+            )
+            .on('mouseover',function(event,d) {
+              d3.select(this).style('cursor','pointer');
+            });
 
         function matches(item_dt, curr_val_dt) {
           return item_dt.getFullYear() == curr_val_dt.getFullYear()
@@ -594,6 +597,7 @@ outage_data = d3.csv("https://ninaprakash1.github.io/assets/cs448b-final-project
           .attr('cx',currentValue)
           .attr('cy',plotVars_vis3.mapHeight + plotVars_vis3.sliderDistance)
           .attr("r", 9)
+          .style('pointer-events','none')
           .raise();
 
 

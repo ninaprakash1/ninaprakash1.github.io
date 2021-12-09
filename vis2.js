@@ -165,6 +165,9 @@ all_iso_lmp = d3.csv('https://ninaprakash1.github.io/assets/cs448b-final-project
                 .attr('width',50)
                 .attr('height',25)
                 .attr('opacity',0)
+                .on('mouseover',function(event,d) {
+                  d3.select(this).style('cursor','pointer');
+                })
                 .on('click',handleCAISOClick);
         
             mapGroup.append('rect') // ERCOT
@@ -173,6 +176,9 @@ all_iso_lmp = d3.csv('https://ninaprakash1.github.io/assets/cs448b-final-project
                 .attr('width',40)
                 .attr('height',15)
                 .attr('opacity',0)
+                .on('mouseover',function(event,d) {
+                  d3.select(this).style('cursor','pointer');
+                })
                 .on('click',handleERCOTClick);
         
             mapGroup.append('rect') // SPP
@@ -181,6 +187,9 @@ all_iso_lmp = d3.csv('https://ninaprakash1.github.io/assets/cs448b-final-project
                 .attr('width',50)
                 .attr('height',20)
                 .attr('opacity',0)
+                .on('mouseover',function(event,d) {
+                  d3.select(this).style('cursor','pointer');
+                })
                 .on('click',handleSPPClick);
         
             mapGroup.append('rect') // PJM
@@ -189,6 +198,9 @@ all_iso_lmp = d3.csv('https://ninaprakash1.github.io/assets/cs448b-final-project
                 .attr('width',70)
                 .attr('height',20)
                 .attr('opacity',0)
+                .on('mouseover',function(event,d) {
+                  d3.select(this).style('cursor','pointer');
+                })
                 .on('click',handlePJMClick);
             
             mapGroup.append('rect') // MISO
@@ -197,6 +209,9 @@ all_iso_lmp = d3.csv('https://ninaprakash1.github.io/assets/cs448b-final-project
                 .attr('width',60)
                 .attr('height',20)
                 .attr('opacity',0)
+                .on('mouseover',function(event,d) {
+                  d3.select(this).style('cursor','pointer');
+                })
                 .on('click',handleMISOClick);
         
             mapGroup.append('rect') // ISONE
@@ -205,6 +220,9 @@ all_iso_lmp = d3.csv('https://ninaprakash1.github.io/assets/cs448b-final-project
                 .attr('width',55)
                 .attr('height',20)
                 .attr('opacity',0)
+                .on('mouseover',function(event,d) {
+                  d3.select(this).style('cursor','pointer');
+                })
                 .on('click',handleISONEClick);
         
             mapGroup.append('rect') // NYISO
@@ -213,6 +231,9 @@ all_iso_lmp = d3.csv('https://ninaprakash1.github.io/assets/cs448b-final-project
                 .attr('width',40)
                 .attr('height',18)
                 .attr('opacity',0)
+                .on('mouseover',function(event,d) {
+                  d3.select(this).style('cursor','pointer');
+                })
                 .on('click',handleNYISOClick);
 
             function handleCAISOClick(d,i) {
